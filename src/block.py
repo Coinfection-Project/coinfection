@@ -101,7 +101,7 @@ class Block:
 			return 'block too big'
 
 def coinbase(miner, reward=BLOCK_REWARD):
-		txn = Transaction(hash='',signature='', type=0, sender='coinbase', reciever=miner, amount=reward)
+		txn = Transaction(type=0, from='coinbase', to=miner, amount=reward, fee=0)
 		txn.hash()
 		return txn
 def genesis():
