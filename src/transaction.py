@@ -1,6 +1,8 @@
 import config
 from hash import make_hash
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+import db
+import json
 
 class Transaction:
   self.to = ''
@@ -39,10 +41,14 @@ class Transaction:
     return self
   
   def save(self):
+    db.set(key=self.hash, value=self.ser(), path='txn.db')
     return True
   
   def as_bytes(self):
     return "{}{}{}{}{}{}".format(to, from, amount, type, extra, fee)
+  
+  def ser(self):
+    return json.dumps(self.__dict__)
   
   def valid_sig(self):
     if (from == 'coinbase'):
