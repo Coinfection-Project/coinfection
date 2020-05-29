@@ -1,2 +1,2 @@
 hashlib
-ecdsa[gmpy2]
+cryptography
