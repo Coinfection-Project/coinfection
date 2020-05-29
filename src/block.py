@@ -1,10 +1,12 @@
 import random
 from hash import make_hash
-max_nonce = 2 ** 32
 import hashlib
 import config
 import transaction
 import sys
+
+max_nonce = 2 ** 32
+
 '''
 A block.
 '''
