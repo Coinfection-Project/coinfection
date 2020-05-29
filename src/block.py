@@ -100,6 +100,10 @@ class Block:
 		if (sys.sizeof(self) > MAX_BLOCK_SIZE): # check size of block
 			return 'block too big'
 
+	def hash(self):
+		work = self.as_bytes()
+		self.hash = make_hash(work)
+		return self.hash()
 def coinbase(miner, reward=BLOCK_REWARD):
 		txn = Transaction(type=0, from='coinbase', to=miner, amount=reward, fee=0)
 		txn.hash()
