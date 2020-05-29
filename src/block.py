@@ -68,7 +68,7 @@ class Block:
 					self.hash = str(hash_result)
 					return None		
 	def as_bytes(self):
-		out = "{}{}{}{}{}{}{}{}".format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, self.transactions, self.version, self.prev_hash)
+		out = "{}{}{}{}{}{}{}".format(self.height, self.diff_bits, self.timestamp, self.nonce, self.transactions, self.version, self.prev_hash)
 		return out
 	def valid(self):
 		if self.hash == '': # a hash should never be blank
