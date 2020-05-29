@@ -20,3 +20,9 @@ for document in cursor:
     if (mempool.in_mempool(txn.hash) == False):
       MEMPOOL.push(txn)
       log.trace("loaded txn to mempool. hash={}".format(txn.hash)
+
+def get(key, path):
+  return None
+               
+def set(key, value, path):
+   return None
