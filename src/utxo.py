@@ -1,18 +1,21 @@
 '''
 UTXO this file defines the txin and txout structs
 '''
+from hash import make_hash
 
 class txIn:
+  hash = ''
   output_hash = ''
   amount = 0
   signature = ''
-  def __init(self, output_hash='', amount=0, signature=''):
+  def __init(self, hash='', output_hash='', amount=0, signature=''):
+    self.hash = hash
     self.output_hash = output_hash
     self.amount = amount
     self.signature = signature
     
   def as_bytes(self):
-    return "{}{}".format(self.hash,self.amount)
+    return "{}{}".format(self.output_hash,self.amount)
   def hash(self):
     work = self.as_bytes()
     self.hash = make_hash(work)
