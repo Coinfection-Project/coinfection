@@ -45,7 +45,7 @@ class Transaction:
     return True
   
   def as_bytes(self):
-    return "{}{}{}{}{}{}".format(to, from, amount, type, extra, fee)
+    return "{}{}{}{}{}{}".format(to, sender, amount, type, extra, fee)
   
   def ser(self):
     return json.dumps(self.__dict__)
@@ -61,7 +61,7 @@ class Transaction:
         else:
           public_key =  ed25519.Ed25519PublicKey.from_public_bytes(bytearray.fromhex(read).decode())
       else:
-        public_key = ed25519.Ed25519PublicKey.from_public_bytes(bytearray.fromhex(self.from).decode())
+        public_key = ed25519.Ed25519PublicKey.from_public_bytes(bytearray.fromhex(self.sender).decode())
       try:
         public_key.verify(signature, self.hash.encode('utf-8'))
         return True
