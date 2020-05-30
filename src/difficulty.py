@@ -16,10 +16,8 @@ from config import *
 def compute_difficulty(block, blockparent):
     d0 = 131072  # difficulty floor as defined by the protocol
     x = blockparent.diff_bits / 2048
-    if block.timestamp <= blockparent.timestamp:  # protocol demands a strictly increasing timestamp
-        raise ValueError(
-            "Timestamp must always increase (blockparent: %d; currentblock: %d)" % (blockparent.timestamp, block.timestamp)
-        )
+    if block.timestamp <= blockparent.timestamp:
+        return d0
     else:
         # current protocol
         sigma = max(1 - (block.timestamp - blockparent.timestamp) / 10, -99)
@@ -52,5 +50,6 @@ def difficulty_test():
             print("Mined genesis block. hash={} time={} difficulty={}".format(new_block.hash, (time.time()*1000)-new_block.timestamp, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
             first = False
+            time.sleep(1) # to prevent diff adjust issues
 
                 
