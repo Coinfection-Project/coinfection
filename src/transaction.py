@@ -12,7 +12,7 @@ class Transaction:
   hash = ''
   signature = ''
   extra = ''
-  fee = 0.5 * SINGLETON_COLLECTION_AMOUNT
+  fee = 0.5 * config.SINGLETON_COLLECTION_AMOUNT
   
   def __init__(to, sender, amount, type=1, hash='', signature='', extra='', fee=0.5 * config.SINGLETON_COLLECTION_AMOUNT):
     self.to = to
