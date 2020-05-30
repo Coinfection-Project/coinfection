@@ -1,7 +1,7 @@
 import random
 from hash import make_hash
 import hashlib
-import config
+from config import *
 import transaction
 import sys
 
