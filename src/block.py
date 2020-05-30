@@ -105,7 +105,7 @@ class Block:
 		self.hash = make_hash(work)
 		return self.hash()
 def coinbase(miner, reward=BLOCK_REWARD):
-		txn = Transaction(type=0, from='coinbase', to=miner, amount=reward, fee=0)
+		txn = Transaction(type=0, sender='coinbase', to=miner, amount=reward, fee=0)
 		txn.hash()
 		return txn
 def genesis():
