@@ -42,7 +42,7 @@ def difficulty_test():
             print("Created block, mining")
             new_block.mine(diff)
             print("Mined block. hash={} time={} difficulty={}".format(new_block.hash, (time.now()*1000)-new_block.time, new_block.diff_bits))
-            BLOCKCHAIN.push(new_block)
+            BLOCKCHAIN.append(new_block)
         else:
             print("creating genesis block")
             diff = 1
@@ -50,7 +50,7 @@ def difficulty_test():
             print("Created genesis block, mining")
             new_block.mine(1)
             print("Mined genesis block. hash={} time={} difficulty={}".format(new_block.hash, (time.now()*1000)-new_block.time, new_block.diff_bits))
-            BLOCKCHAIN.push(new_block)
+            BLOCKCHAIN.append(new_block)
             first = False
 
                 
