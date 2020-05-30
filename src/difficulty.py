@@ -15,7 +15,7 @@ from config import *
 
 def compute_difficulty(block, blockparent):
     d0 = 131072  # difficulty floor as defined by the protocol
-    x = blockparent.difficulty / 2048
+    x = blockparent.diff_bits / 2048
     if block.timestamp <= blockparent.timestamp:  # protocol demands a strictly increasing timestamp
         raise ValueError(
             "Timestamp must always increase (blockparent: %d; currentblock: %d)" % (blockparent.timestamp, block.timestamp)
@@ -23,7 +23,7 @@ def compute_difficulty(block, blockparent):
     else:
         # current protocol
         sigma = max(1 - (block.timestamp - blockparent.timestamp) / 10, -99)
-    return max(d0, blockparent.difficulty + sigma * x)
+    return max(d0, blockparent.diff_bits + sigma * x)
 
 def difficulty_test():
     BLOCKCHAIN = []
