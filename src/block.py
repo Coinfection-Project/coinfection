@@ -83,7 +83,7 @@ class Block:
 		else:
 			tmp = Block() # create shell block
 			read_err = tmp.read(hash=self.prev_hash) # try to read the block with hash self.prev_hash into the shell block
-			if (read_err not None): # if it failed return
+			if (read_err != None): # if it failed return
 				return 'failed to read prev block. error='+read_err
 			elif (tmp.height != self.height-1): # if the read block's height is not 1 behind self.height return err'
 				return 'height missmatch'
