@@ -2,7 +2,7 @@ import random
 from hash import make_hash
 import hashlib
 from config import *
-import transaction
+from transaction import *
 import sys
 
 max_nonce = 2 ** 32
