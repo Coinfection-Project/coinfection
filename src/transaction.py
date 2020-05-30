@@ -6,7 +6,7 @@ import json
 
 class Transaction:
   self.to = ''
-  self.from = ''
+  self.sender = ''
   self.amount = 0
   self.type = 1
   self.hash = ''
@@ -14,9 +14,9 @@ class Transaction:
   self.extra = ''
   self.fee = 0.5 * SINGLETON_COLLECTION_AMOUNT
   
-  def __init__(to, from, amount, type=1, hash='', signature='', extra='', fee=0.5 * SINGLETON_COLLECTION_AMOUNT):
+  def __init__(to, sender, amount, type=1, hash='', signature='', extra='', fee=0.5 * SINGLETON_COLLECTION_AMOUNT):
     self.to = to
-    self.from = from
+    self.sender = sender
     self.amount = amount
     self.type = type
     self.hash = hash
@@ -51,11 +51,11 @@ class Transaction:
     return json.dumps(self.__dict__)
   
   def valid_sig(self):
-    if (from == 'coinbase'):
+    if (self.sender == 'coinbase'):
       return True
     else:
-      if (self.from.endswith('.coof')):
-        read = db.get(key=self.from, path='nicknames.db')
+      if (self.sender.endswith('.coof')):
+        read = db.get(key=self.sender, path='nicknames.db')
         if (read == None):
           return False;
         else:
