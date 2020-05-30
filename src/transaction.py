@@ -45,7 +45,7 @@ class Transaction:
     return True
   
   def as_bytes(self):
-    return "{}{}{}{}{}{}".format(to, sender, amount, type, extra, fee)
+    return "{}{}{}{}{}{}".format(self.to, self.sender, self.amount, self.type, self.extra, self.fee)
   
   def ser(self):
     return json.dumps(self.__dict__)
