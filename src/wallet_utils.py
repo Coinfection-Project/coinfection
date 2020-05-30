@@ -14,7 +14,7 @@ class Wallet:
     self.address = address
   def gen_keypair(self):
     self.privkey = Ed25519PrivateKey.generate()
-    self.pubkey = private_key.public_key()
+    self.pubkey = self.privkey.public_key()
     self.address = self.pubkey.public_bytes(
       encoding=serialization.Encoding.Raw,
       format=serialization.PublicFormat.Raw
