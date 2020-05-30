@@ -44,7 +44,7 @@ class Block:
 			if (len(self.transactions) > 1):
 				if (self.transactions[0].type != 1):
 					amount = BLOCK_REWARD
-					coinbase_txn = coinbase(MINER_ADDR, amount)
+					coinbase_txn = coinbase(MINING_ADDR, amount)
 					tmp = self
 					for i in range(len(self.transactions)):
 						if (i == 0):
@@ -54,7 +54,7 @@ class Block:
 					tmp.transactions.push(self.transactions[-1])
 					self.transactions = tmp.transactions
 			else:
-				self.transactions[0] = coinbase(MINER_ADDR, amount)
+				self.transactions[0] = coinbase(MINING_ADDR, amount)
 			work = self.as_bytes()
 			target = 2 ** (256-self.diff_bits)
 			for nonce in range(max_nonce):
