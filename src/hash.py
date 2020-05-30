@@ -11,8 +11,9 @@ def make_hash(text):
     m.update(str(m.hexdigest()).encode("utf-8"))
     return str(m.hexdigest())
 
+
 def fast_hash(text):
-	'''
+    '''
     Convert a string into a BLAKE2 hash
     '''
     m = hashlib.blake2b(digest_size=128) # this hash function is used for the db (to hash the keys). it is extra large (128 bytes) to prevent collisions
