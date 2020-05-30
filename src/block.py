@@ -4,7 +4,7 @@ import hashlib
 from config import *
 from transaction import *
 import sys
-
+from difficulty import calculate_target
 max_nonce = 2 ** 32
 
 '''
@@ -56,7 +56,7 @@ class Block:
 			else:
 				self.transactions.append(coinbase(MINING_ADDR, BLOCK_REWARD))
 			work = self.as_bytes()
-			target = (0xffff * 2**208) / self.diff_bits
+			target = calculate_target(self.diff_bits)
 			for nonce in range(max_nonce):
 				# increment the nonce
 				self.nonce = nonce
