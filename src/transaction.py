@@ -24,7 +24,7 @@ class Transaction:
     self.extra = extra
     self.fee = fee
     
-  def hash(self):
+  def hash_tx(self):
     work = self.as_bytes()
     self.hash = make_hash(work)
     return self.hash
