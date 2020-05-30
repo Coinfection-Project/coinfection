@@ -62,7 +62,7 @@ class Block:
 				self.nonce = nonce
 				# hash the block
 				hash_result = make_hash(work)
-				print("hash={} nonce={} value={} target={}".format(self.hash, nonce, int(hash_result, 16), target)
+				print("hash={} nonce={} value={} target={}".format(self.hash, nonce, int(hash_result, 16), target))
             	# check if this is a valid result, below the target
 				if int(hash_result, 16) < target:
 					#  set the hash of self to the hash we found
