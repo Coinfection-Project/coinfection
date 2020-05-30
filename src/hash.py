@@ -10,6 +10,15 @@ def make_hash(text):
     m.update(text.encode("utf-8"))
     m.update(str(m.hexdigest()).encode("utf-8"))
     return str(m.hexdigest())
-    
+
+def fast_hash(text):
+	'''
+    Convert a string into a BLAKE2 hash
+    '''
+    m = hashlib.blake2b()
+    m.update(text.encode("utf-8"))
+    m.update(str(m.hexdigest()).encode("utf-8"))
+    return str(m.hexdigest())
+
 def test():
 	print(make_hash(input("$:")))
