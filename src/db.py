@@ -1,7 +1,7 @@
 # Import the python libraries
 import pymongo
 import logging
-from transaction import 
+from transaction import *
 import mempool
 log = logging.getLogger(__name__)
 from hash import fast_hash
