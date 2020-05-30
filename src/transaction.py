@@ -5,14 +5,14 @@ import db
 import json
 
 class Transaction:
-  self.to = ''
-  self.sender = ''
-  self.amount = 0
-  self.type = 1
-  self.hash = ''
-  self.signature = ''
-  self.extra = ''
-  self.fee = 0.5 * SINGLETON_COLLECTION_AMOUNT
+  to = ''
+  sender = ''
+  amount = 0
+  type = 1
+  hash = ''
+  signature = ''
+  extra = ''
+  fee = 0.5 * SINGLETON_COLLECTION_AMOUNT
   
   def __init__(to, sender, amount, type=1, hash='', signature='', extra='', fee=0.5 * SINGLETON_COLLECTION_AMOUNT):
     self.to = to
