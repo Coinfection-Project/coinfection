@@ -51,10 +51,10 @@ class Block:
 							tmp.transactions[0] = coinbase_txn
 						else:
 							tmp.transactions[i] = self.transactions[i-1]
-					tmp.transactions.push(self.transactions[-1])
+					tmp.transactions.append(self.transactions[-1])
 					self.transactions = tmp.transactions
 			else:
-				self.transactions.push(coinbase(MINING_ADDR, BLOCK_REWARD))
+				self.transactions.append(coinbase(MINING_ADDR, BLOCK_REWARD))
 			work = self.as_bytes()
 			target = 2 ** (256-self.diff_bits)
 			for nonce in range(max_nonce):
