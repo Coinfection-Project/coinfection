@@ -10,6 +10,8 @@ https://github.com/giact/ethereum-blocktime-simulator/blob/master/ethereum-block
 '''
 from block import *
 import time
+from wallet_utils import *
+from config import *
 
 def compute_difficulty(block, blockparent):
     d0 = 131072  # difficulty floor as defined by the protocol
@@ -26,6 +28,9 @@ def compute_difficulty(block, blockparent):
 def difficulty_test():
     BLOCKCHAIN = []
     first = True
+    wallet = Wallet()
+    wallet.gen_keypair()
+    set_mining_addr(wallet.address)
     while True:
         if (first == False):
             print("creating new block")
