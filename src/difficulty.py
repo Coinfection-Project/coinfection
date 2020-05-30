@@ -17,10 +17,12 @@ def compute_difficulty(block, blockparent):
     d0 = 131072  # difficulty floor as defined by the protocol
     x = blockparent.diff_bits / 2048
     if block.timestamp <= blockparent.timestamp:
+        print(d0)
         return d0
     else:
         # current protocol
         sigma = max(1 - (block.timestamp - blockparent.timestamp) / 10, -99)
+    print(max(d0, blockparent.diff_bits + sigma * x))
     return max(d0, blockparent.diff_bits + sigma * x)
 
 def difficulty_test():
