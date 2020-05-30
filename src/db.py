@@ -19,7 +19,7 @@ for document in cursor:
   if (txn.valid()):
     if (mempool.in_mempool(txn.hash) == False):
       MEMPOOL.push(txn)
-      log.trace("loaded txn to mempool. hash={}".format(txn.hash)
+      log.trace("loaded txn to mempool. hash={}".format(txn.hash))
 
 def get(key, path):
   return None
