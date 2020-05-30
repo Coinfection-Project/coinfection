@@ -60,14 +60,17 @@ class Block:
 			for nonce in range(max_nonce):
 				# increment the nonce
 				self.nonce = nonce
+				work = self.as_bytes()
+
 				# hash the block
 				hash_result = make_hash(work)
-				print("hash={} nonce={} value={} target={}".format(self.hash, nonce, int(hash_result, 16), target))
+				print("hash={} nonce={} value={} target={}".format(hash_result, nonce, int(hash_result, 16), target))
             	# check if this is a valid result, below the target
 				if int(hash_result, 16) < target:
 					#  set the hash of self to the hash we found
 					self.hash = str(hash_result)
-					return None		
+					return None
+
 	def as_bytes(self):
 		out = "{}{}{}{}{}{}{}".format(self.height, self.diff_bits, self.timestamp, self.nonce, self.transactions, self.version, self.prev_hash)
 		return out
