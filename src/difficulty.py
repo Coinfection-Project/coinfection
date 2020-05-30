@@ -35,7 +35,7 @@ def difficulty_test():
                 diff = compute_difficulty(pb, BLOCKCHAIN[-2])
             new_block = Block(height=pb.height+1, hash='', diff_bits=diff, timestamp=time.time()*1000, transactions=[], nonce=0, version=100, prev_hash=pb.hash)
             print("Created block, mining")
-            new_block.mine()
+            new_block.mine(diff)
             print("Mined block. hash={} time={} difficulty={}".format(new_block.hash, (time.now()*1000)-new_block.time, new_block.diff_bits))
             BLOCKCHAIN.push(new_block)
         else:
@@ -43,7 +43,7 @@ def difficulty_test():
             diff = 1
             new_block = Block(height=0, hash='', diff_bits=diff, timestamp=time.time()*1000)
             print("Created genesis block, mining")
-            new_block.mine()
+            new_block.mine(1)
             print("Mined genesis block. hash={} time={} difficulty={}".format(new_block.hash, (time.now()*1000)-new_block.time, new_block.diff_bits))
             BLOCKCHAIN.push(new_block)
             first = False
