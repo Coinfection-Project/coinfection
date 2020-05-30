@@ -14,7 +14,7 @@ from wallet_utils import *
 from config import *
 
 def compute_difficulty(block, blockparent):
-    d0 = 131072  # difficulty floor as defined by the protocol
+    d0 = 100  # difficulty floor as defined by the protocol
     x = blockparent.diff_bits / 2048
     if block.timestamp <= blockparent.timestamp:
         print(d0)
