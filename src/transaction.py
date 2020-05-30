@@ -14,7 +14,7 @@ class Transaction:
   extra = ''
   fee = 0.5 * config.SINGLETON_COLLECTION_AMOUNT
   
-  def __init__(to, sender, amount, type=1, hash='', signature='', extra='', fee=0.5 * config.SINGLETON_COLLECTION_AMOUNT):
+  def __init__(self, to, sender, amount, type=1, hash='', signature='', extra='', fee=0.5 * config.SINGLETON_COLLECTION_AMOUNT):
     self.to = to
     self.sender = sender
     self.amount = amount
