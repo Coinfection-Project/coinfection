@@ -149,11 +149,17 @@ class Block:
 		b.from_json(as_json) # load into shell block from json
 		return b
 	
-def coinbase(miner, reward=BLOCK_REWARD):
-		txn = Transaction(type=0, sender='coinbase', to=miner, amount=reward, fee=0)
+def coinbase(miner, reward=BLOCK_REWARD):txIn
+		coinbase_input = txIn('','',amount=reward, signature='', owner=miner, index=0)
+		coinbase_input.hash_in()
+		output_count = int(db.get('outputindex', 'coofchainstatus')) + 1 output_count)
+		db.get('outputindex', str(output_count),'coofchainstatus')
+		out = txOut(hash='', index=output_count, owner=miner, amount=reward,allowed_infection=False, immune=False))
+		output.hash_out()
+		txn = Transaction(type=0, sender='coinbase', to=miner, inputs=[coinbase_input], outputs=[out])
 		txn.hash_tx()
 		return txn
-def genesis():
+def genesis(): # TODO: return same hardcoded block every time
 		gen_blk = Block(timestamp=time.time()*1000)
 		gen_blk.transactions = coinbase(GENESIS_REWARD_ADDR, PREMINE)
 		gen_blk.mine()
