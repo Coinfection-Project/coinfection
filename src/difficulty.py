@@ -21,11 +21,15 @@ def diff2target(diff):
  return math.floor((2**256 - 1) / diff)
 
 # based on a simplifyed form of BTC's diff algo
+# *SHOULD* result in a approx time of 20 secconds per block, adjusts every block. 
 def compute_difficulty(block, blockparent):
-    if (block.timestamp < blockparent.timestamp):
+    # return a diff of 1 for the first 3 blocks
+    if (block.height < 4):
         return 1
-    return block.diff_bits * 20 / ((block.timestamp - blockparent.timestamp) / 1000)
-    # *SHOULD* result in a approx time of 20 secconds per block, adjusts every block. 
+    elif (block.timestamp <= blockparent.timestamp):
+         return block.diff_bits * 20
+    else:
+        return block.diff_bits * 20 / ((block.timestamp - blockparent.timestamp) / 1000)
 
 def difficulty_test():
     from block import Block
