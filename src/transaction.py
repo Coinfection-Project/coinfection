@@ -56,7 +56,7 @@ class Transaction:
         return None
 
     def save(self):
-        set(key=self.hash, value=self.ser(), path='txn.db')
+        set(key=self.hash, value=self.ser(), collection_name='txn.db')
         return True
 
     def as_bytes(self):
@@ -74,7 +74,7 @@ class Transaction:
         else:
             # all nicknames end with .coof, if the sender ends with .coof then we need to get the pubkey from the db
             if (self.sender.endswith('.coof')):
-                read = get(key=self.sender, path='nicknames.db')
+                read = get(key=self.sender, collection_name='nicknames.db')
                 if (read == None):
                     return False
                 else:
