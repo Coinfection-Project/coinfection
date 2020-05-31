@@ -13,29 +13,12 @@ import time
 from wallet_utils import *
 from config import *
 
-def calculate_target(bits):
-    # http://www.righto.com/2014/02/bitcoin-mining-hard-way-algorithms.html
-    # https://gist.github.com/shirriff/cd5c66da6ba21a96bb26#file-mine-py
-    # https://gist.github.com/shirriff/cd5c66da6ba21a96bb26#file-mine-py
-    # https://en.bitcoin.it/wiki/Difficulty
-    exp = bits >> 24
-    mant = bits & 0xffffff
-    target_hexstr = '%064x' % (mant * (1<<(8*(exp - 3))))
-    target_str = target_hexstr.decode('hex')
-    return target_str
+# diff into target
+def calculate_target(diff):
+ return (2**224) * diff
 
 def compute_difficulty(block, blockparent):
-    d0 = 100  # difficulty floor as defined by the protocol
-    x = blockparent.diff_bits / 2048
-    if block.timestamp <= blockparent.timestamp:
-        print(d0)
-        return d0
-    else:
-        # current protocol
-        sigma = max(1 - (block.timestamp - blockparent.timestamp) / 10, -99)
-    print(max(d0, blockparent.diff_bits + sigma * x))
-    return max(d0, blockparent.diff_bits + sigma * x)
-
+    return block.diff_bits * 200 / (((block.timestamp - blockparent.timestamp)/1000) + 1)
 def difficulty_test():
     BLOCKCHAIN = []
     first = True
