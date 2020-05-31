@@ -3,6 +3,7 @@ from hash import make_hash
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 import db
 import json
+from utils import listToString
 
 class Transaction:
   to = ''
@@ -13,17 +14,20 @@ class Transaction:
   signature = ''
   extra = ''
   fee = 0.5 * config.SINGLETON_COLLECTION_AMOUNT
+  inputs = []
+  outputs = []
   
-  def __init__(self, to, sender, amount, type=1, hash='', signature='', extra='', fee=0.5 * config.SINGLETON_COLLECTION_AMOUNT):
+  def __init__(self, to, sender, type=1, hash='', signature='', extra='', fee=0.5 * config.SINGLETON_COLLECTION_AMOUNT, inputs=[], outputs=[]):
     self.to = to
     self.sender = sender
-    self.amount = amount
     self.type = type
     self.hash = hash
+    self.inputs = inputs
+    self.outputs = outputs
     self.signature = signature
     self.extra = extra
     self.fee = fee
-    
+  
   def hash_tx(self):
     work = self.as_bytes()
     self.hash = make_hash(work)
@@ -35,6 +39,7 @@ class Transaction:
     return self.signature
   
   def valid(self):
+    # TODO
     return True
   
   def read(self, hash):
@@ -45,16 +50,26 @@ class Transaction:
     return True
   
   def as_bytes(self):
-    return "{}{}{}{}{}{}".format(self.to, self.sender, self.amount, self.type, self.extra, self.fee)
+    return "{}{}{}{}{}{}{}".format(self.to, self.sender, listToString(self.inputs), listToString(self.outputs), self.type, self.extra, self.fee)
   
   def ser(self):
     return json.dumps(self.__dict__)
+  
+  def valid_signature_raw(sig, pub, text): # takes a hex sig and a hex pub key as well as the input plaintext (as raw string)
+    public_key =  ed25519.Ed25519PublicKey.from_public_bytes(bytearray.fromhex(pub).decode())
+    try:
+      public_key.verify(bytearray.fromhex(self.signature).decode(), text.encode('utf-8'))
+      return True
+    except:
+      return False
+  def valid_input(self, index):
+    return True # TODO
   
   def valid_sig(self):
     if (self.sender == 'coinbase'):
       return True
     else:
-      if (self.sender.endswith('.coof')):
+      if (self.sender.endswith('.coof')): # all nicknames end with .coof, if the sender ends with .coof then we need to get the pubkey from the db
         read = db.get(key=self.sender, path='nicknames.db')
         if (read == None):
           return False;
@@ -63,7 +78,7 @@ class Transaction:
       else:
         public_key = ed25519.Ed25519PublicKey.from_public_bytes(bytearray.fromhex(self.sender).decode())
       try:
-        public_key.verify(signature, self.hash.encode('utf-8'))
+        public_key.verify(bytearray.fromhex(self.signature).decode(), self.hash.encode('utf-8'))
         return True
       except:
         return False
