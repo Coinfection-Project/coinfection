@@ -2,7 +2,7 @@ import random
 from hash import make_hash
 import hashlib
 from config import *
-from transaction import *
+from transaction import Transaction
 import sys
 from difficulty import diff2target, check_diff
 import json
