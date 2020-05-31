@@ -162,7 +162,10 @@ def coinbase(miner, reward=BLOCK_REWARD):
 		coinbase_input= txIn('', '', amount=reward,
 		                    signature='', owner=miner, index=0)
 		coinbase_input.hash_in()
-		output_count=int(get('outputindex', 'coofchainstatus')) + 1
+		got = get('outputindex', 'coofchainstatus')
+		if got == None:
+			got = 0
+		output_count=int(got) + 1
 		set('outputindex', str(output_count),'coofchainstatus')
 		out = txOut(hash='', index=output_count, owner=miner, amount=reward,allowed_infection=False, immune=False)
 		out.hash_out()
