@@ -6,7 +6,7 @@
 from utils import *
 from config import *
 import math
-
+from time import sleep
 ''' 
 Based of cryptonote specification #10
 (https://cryptonote.org/cns/cns010.txt)
@@ -55,6 +55,6 @@ def difficulty_test():
             print("Mined genesis block. hash={} time={}(sec) difficulty={}".format(new_block.hash, (millis()-new_block.timestamp) / 1000, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
             first = False
-            time.sleep(1) # to prevent diff adjust issues
+            sleep(1) # to prevent diff adjust issues
 
                 
