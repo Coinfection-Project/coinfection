@@ -60,4 +60,5 @@ def difficulty_test():
             print("Mined genesis block. hash={} time={}(sec) difficulty={}".format(new_block.hash, (millis()-new_block.timestamp) / 1000, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
             first = False
-        sleep(1) # to prevent diff adjust issues
+        if (new_block.height < 19):
+            sleep(20 - new_block.height) # to prevent diff adjust issues
