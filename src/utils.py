@@ -25,3 +25,16 @@ class Wallet:
 # thanks to https://stackoverflow.com/a/6000198
 def millis():
     return int(round(time_.time() * 1000))
+
+def cal_average(num=[]):
+    if num.len() == 1:
+      return num[0]
+    elif num.len() == 0:
+      return 0
+    else:
+      sum_num = 0
+      for t in num:
+          sum_num = sum_num + t           
+
+      avg = sum_num / len(num)
+      return avg
