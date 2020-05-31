@@ -121,7 +121,8 @@ class Block:
 		elif height == None:
 			# get using hash
 			height = db.get(hash, 'coofblocksindex')
-		return db.get('blk-{}'.format(self.height), 'coofblocks')
+		as_json = db.get('blk-{}'.format(self.height), 'coofblocks')
+		return json.loads(as_json)
 	
 # subclass JSONEncoder
 class BlockEncoder(JSONEncoder):
