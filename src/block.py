@@ -31,7 +31,30 @@ class Block:
  		self.transactions = transactions
  		self.version = version
  		self.prev_hash = prev_hash
-    
+        def to_json(self):
+			txns_json = '[ '
+			for txn in transactions:
+				txn_json = txn.to_json()
+				txns_json = txns_json + txn_json + ', '
+			txns_json =  txns_json + ']'
+				
+			return '{'hash' : {}, "height"  : {}, "diff_bits" : {}, "timestamp" : {}, "nonce" : {}, "transactions" : {}, "version" : {}, "prev_hash" : {} }'.format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, txns_json, self.version, self.prev_hash
+		
+		def from_json(self, json):
+			obj = json.loads(json)
+			self.hash = obj['hash']
+ 			self.height = obj['height']
+ 			self.diff_bits = obj['diff_bits']
+ 			self.timestamp = obj['timestamp']
+ 			self.nonce = obj['nonce']
+			for txn_json in obj['transactions']:
+				txn = Transaction()
+				txn.from_json(txn_json)
+				self.transactions.push(txn)
+
+			self.version = obj['version']
+ 			self.prev_hash = obj['prev_hash']
+			
 	def mine(self, difficulty, diff_bits=None):
 		if (diff_bits != None):
 			if (diff_bits < difficulty): # diff bits must be over or equal to difficulty
@@ -112,7 +135,7 @@ class Block:
 		self.hash = make_hash(work)
 		return self.hash()
 	def save(self):
-		db.set('blk-{}'.format(self.height), BlockEncoder().encode(self), 'coofblocks')
+		db.set('blk-{}'.format(self.height), self.to_json(), 'coofblocks')
 		db.set(self.hash, str(self.height), 'coofblocksindex')
 		return True;
 	def get(height=None, hash=None):
@@ -122,12 +145,10 @@ class Block:
 			# get using hash
 			height = db.get(hash, 'coofblocksindex')
 		as_json = db.get('blk-{}'.format(self.height), 'coofblocks')
-		return json.loads(as_json)
+		b = Block() # init shell block
+		b.from_json(as_json) # load into shell block from json
+		return b
 	
-# subclass JSONEncoder
-class BlockEncoder(JSONEncoder):
-        def default(self, o):
-            return o.__dict_
 def coinbase(miner, reward=BLOCK_REWARD):
 		txn = Transaction(type=0, sender='coinbase', to=miner, amount=reward, fee=0)
 		txn.hash_tx()
