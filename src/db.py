@@ -2,9 +2,9 @@
 from hash import fast_hash
 import pymongo
 import logging
-from transaction import Transaction
 import mempool
 import json
+import transaction
 log = logging.getLogger(__name__)
 
 # Connect to client
@@ -16,7 +16,8 @@ collection = db.mempool
 # Read every saved unconfirmed transaction
 cursor = collection.find({})
 for document in cursor:
-    txn = Transaction(**json.load(document))
+    import transaction
+    txn = transaction.Transaction(**json.load(document))
     log.debug('Loaded transaction from db. hash={}'.format(txn.hash))
     if (txn.valid()):
         # revalidate it
