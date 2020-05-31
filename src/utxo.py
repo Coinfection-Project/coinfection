@@ -14,12 +14,12 @@ class txIn:
     amount = 0  # the amount (in singleton units)
     signture = ''  # the self.hash var signed with owner address's priv key
 
-    def __init__(self, hash='', tx_hash='', amount=0, signature='', owner='' index=0):
+    def __init__(self, hash='', tx_hash='', amount=0, signature='', owner='', index=0):
         self.hash = hash
         self.tx_hash = tx_hash
         self.amount = amount
         self.index = index
-        self.address = ownder
+        self.address = owner
         self.signature = signature
 
     def to_json(self):
@@ -35,14 +35,15 @@ class txIn:
         self.signature = obj['signature']
 
     def as_bytes(self):
-        return "{}{}".format(self.output_hash, self.amount)
+        return "{}{}{}{}".format(self.tx_hash, self.amount, self.index, self.address)
 
-    def hash_out(self):
+    def hash_in(self):
         work = self.as_bytes()
         self.hash = make_hash(work)
         return self.hash
 
     def sign(self):
+        return True
 
 
 class txOut:
@@ -70,7 +71,7 @@ class txOut:
         return (self.is_clump() == True and self.allowed_infection == True and self.immune == False and self.infected == False)
 
     def as_bytes(self):
-        return "{}{}".format(self.output_hash, self.amount)
+        return "{}{}{}".format(self.index, self.address, self.amount)
 
     def hash_out(self):
         work = self.as_bytes()

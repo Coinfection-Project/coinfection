@@ -8,6 +8,8 @@ from difficulty import diff2target, check_diff
 import json
 from json import JSONEncoder
 from db import get, set
+import time
+from utxo import txIn, txOut
 max_nonce = 2 ** 32
 
 '''
@@ -35,29 +37,29 @@ class Block:
  		self.version = version
  		self.prev_hash = prev_hash
 
-        def to_json(self):
+	def to_json(self):
 			txns_json = '[ '
-			for txn in transactions:
+			for txn in self.transactions:
 				txn_json = txn.to_json()
 				txns_json = txns_json + txn_json + ', '
 			txns_json = txns_json + ']'
 
-			return '{'hash' : {}, "height"  : {}, "diff_bits" : {}, "timestamp" : {}, "nonce" : {}, "transactions" : {}, "version" : {}, "prev_hash" : {} }'.format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, txns_json, self.version, self.prev_hash
+			return '{"hash" : {}, "height"  : {}, "diff_bits" : {}, "timestamp" : {}, "nonce" : {}, "transactions" : {}, "version" : {}, "prev_hash" : {} }'.format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, txns_json, self.version, self.prev_hash)
 
-		def from_json(self, json):
+	def from_json(self, json):
 			obj=json.loads(json)
 			self.hash=obj['hash']
- 			self.height=obj['height']
- 			self.diff_bits=obj['diff_bits']
- 			self.timestamp=obj['timestamp']
- 			self.nonce=obj['nonce']
+			self.height=obj['height']
+			self.diff_bits=obj['diff_bits']
+			self.timestamp=obj['timestamp']
+			self.nonce=obj['nonce']
 			for txn_json in obj['transactions']:
-				txn=Transaction()
+				txn= Transaction(to='', sender='')
 				txn.from_json(txn_json)
 				self.transactions.push(txn)
 
 			self.version=obj['version']
- 			self.prev_hash=obj['prev_hash']
+			self.prev_hash=obj['prev_hash']
 
 	def mine(self, difficulty, diff_bits=None):
 		if (diff_bits != None):
@@ -118,7 +120,7 @@ class Block:
 		else:
 			tmp=Block()  # create shell block
 			# try to read the block with hash self.prev_hash into the shell block
-			read_err=tmp.read(hash=self.prev_hash)
+			read_err=tmp.get(hash=self.prev_hash)
 			if (read_err != None):  # if it failed return
 				return 'failed to read prev block. error='+read_err
 			# if the read block's height is not 1 behind self.height return err'
@@ -134,40 +136,41 @@ class Block:
 				i=i+1
 				if (tx.valid() == False):
 					return 'tx at slot=' + i + ' invalid'
-		if (sys.sizeof(self) > MAX_BLOCK_SIZE):  # check size of block
-			return 'block too big'
+		#if (sys.sizeof(self) > MAX_BLOCK_SIZE):  # TODO: check size of block
+		#	return 'block too big'
 
 	def hash_blk(self):
 		work=self.as_bytes()
 		self.hash=make_hash(work)
 		return self.hash()
 	def save(self):
-		db.set('blk-{}'.format(self.height), self.to_json(), 'coofblocks')
-		db.set(self.hash, str(self.height), 'coofblocksindex')
+		set('blk-{}'.format(self.height), self.to_json(), 'coofblocks')
+		set(self.hash, str(self.height), 'coofblocksindex')
 		return True;
-	def get(height=None, hash=None):
+	def get(self, height=None, hash=None):
 		if height == None and hash == None:
 			return 'must provide either hash or height'
 		elif height == None:
 			# get using hash
-			height=db.get(hash, 'coofblocksindex')
-		as_json=db.get('blk-{}'.format(self.height), 'coofblocks')
+			height=get(hash, 'coofblocksindex')
+		as_json=get('blk-{}'.format(self.height), 'coofblocks')
 		b=Block()  # init shell block
 		b.from_json(as_json)  # load into shell block from json
 		return b
 
-def coinbase(miner, reward=BLOCK_REWARD): txIn
-		coinbase_input=txIn('', '', amount=reward,
+def coinbase(miner, reward=BLOCK_REWARD):
+		coinbase_input= txIn('', '', amount=reward,
 		                    signature='', owner=miner, index=0)
 		coinbase_input.hash_in()
-		output_count=int(db.get('outputindex', 'coofchainstatus')) + 1 output_count)
-		db.get('outputindex', str(output_count),'coofchainstatus')
-		out = txOut(hash='', index=output_count, owner=miner, amount=reward,allowed_infection=False, immune=False))
-		output.hash_out()
+		output_count=int(get('outputindex', 'coofchainstatus')) + 1
+		set('outputindex', str(output_count),'coofchainstatus')
+		out = txOut(hash='', index=output_count, owner=miner, amount=reward,allowed_infection=False, immune=False)
+		out.hash_out()
 		txn = Transaction(type=0, sender='coinbase', to=miner, inputs=[coinbase_input], outputs=[out])
 		txn.hash_tx()
 		return txn
 def genesis(): # TODO: return same hardcoded block every time
 		gen_blk = Block(timestamp=time.time()*1000)
 		gen_blk.transactions = coinbase(GENESIS_REWARD_ADDR, PREMINE)
-		gen_blk.mine()
+		gen_blk.mine(1)
+		return gen_blk

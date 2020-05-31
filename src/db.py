@@ -2,8 +2,9 @@
 from hash import fast_hash
 import pymongo
 import logging
-from transaction import *
+from transaction import Transaction
 import mempool
+import json
 log = logging.getLogger(__name__)
 
 # Connect to client
@@ -21,14 +22,14 @@ for document in cursor:
         # revalidate it
         if (mempool.in_mempool(txn.hash) == False):
             # if it is not already loaded then load it
-            MEMPOOL.push(txn)
+            mempool.MEMPOOL.append(txn)
             log.trace("loaded txn to mempool. hash={}".format(txn.hash))
         else:
             log.trace(
                 "Ignoring txn, already in mempool. hash={}".format(txn.hash))
     else:
         log.trace(
-            "Loaded invalid unconfirmed txn, discarding. hash={}".foramt(txn.hash))
+            "Loaded invalid unconfirmed txn, discarding. hash={}".format(txn.hash))
 
 
 def get(key, collection_name):

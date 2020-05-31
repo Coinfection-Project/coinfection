@@ -1,7 +1,7 @@
 import config
 from hash import make_hash
-from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
-import db
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
+from db import get, set
 import json
 from utils import listToString
 
@@ -35,7 +35,7 @@ class Transaction:
         return self.hash
 
     def sign(self, priv_key):
-        key = ed25519.Ed25519PrivateKey.from_private_bytes(
+        key = Ed25519PrivateKey.from_private_bytes(
             bytearray.fromhex(priv_key).decode())
         self.signature = key.sign(self.hash.encode('utf-8')).hex()
         return self.signature
@@ -44,11 +44,19 @@ class Transaction:
         # TODO
         return True
 
+    def from_json(self, json):
+        # TODO
+        return True
+
+    def to_json(self):
+        # TODO
+        return '{}'
+
     def read(self, hash):
-        return self
+        return None
 
     def save(self):
-        db.set(key=self.hash, value=self.ser(), path='txn.db')
+        set(key=self.hash, value=self.ser(), path='txn.db')
         return True
 
     def as_bytes(self):
@@ -56,17 +64,6 @@ class Transaction:
 
     def ser(self):
         return json.dumps(self.__dict__)
-
-    # takes a hex sig and a hex pub key as well as the input plaintext (as raw string)
-    def valid_signature_raw(sig, pub, text):
-        public_key = ed25519.Ed25519PublicKey.from_public_bytes(
-            bytearray.fromhex(pub).decode())
-        try:
-            public_key.verify(bytearray.fromhex(
-                self.signature).decode(), text.encode('utf-8'))
-            return True
-        except:
-            return False
 
     def valid_input(self, index):
         return True  # TODO
@@ -77,14 +74,14 @@ class Transaction:
         else:
             # all nicknames end with .coof, if the sender ends with .coof then we need to get the pubkey from the db
             if (self.sender.endswith('.coof')):
-                read = db.get(key=self.sender, path='nicknames.db')
+                read = get(key=self.sender, path='nicknames.db')
                 if (read == None):
                     return False
                 else:
-                    public_key = ed25519.Ed25519PublicKey.from_public_bytes(
+                    public_key = Ed25519PublicKey.from_public_bytes(
                         bytearray.fromhex(read).decode())
             else:
-                public_key = ed25519.Ed25519PublicKey.from_public_bytes(
+                public_key = Ed25519PublicKey.from_public_bytes(
                     bytearray.fromhex(self.sender).decode())
             try:
                 public_key.verify(bytearray.fromhex(
@@ -92,3 +89,16 @@ class Transaction:
                 return True
             except:
                 return False
+
+# takes a hex sig and a hex pub key as well as the input plaintext (as raw string)
+
+
+def valid_signature_raw(sig, pub, text):
+    public_key = Ed25519PublicKey.from_public_bytes(
+        bytearray.fromhex(pub).decode())
+    try:
+        public_key.verify(bytearray.fromhex(
+            sig).decode(), text.encode('utf-8'))
+        return True
+    except:
+        return False

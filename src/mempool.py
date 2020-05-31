@@ -27,10 +27,10 @@ def add_to_mempool(txn):
     if (in_mempool(txn.hash)):
         return False
     else:
-        MEMPOOL.push(txn)
+        MEMPOOL.append(txn)
         return True
 
 
 def add_to_mempool_no_check(txn):
-    MEMPOOL.push(txn)
+    MEMPOOL.append(txn)
     return True

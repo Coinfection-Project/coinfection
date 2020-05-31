@@ -10,7 +10,7 @@ class Wallet:
     privkey = ''
     address = ''
 
-    def __init(balance=0, outputs=[], pubkey='', privkey='', address=''):
+    def __init(self, balance=0, outputs=[], pubkey='', privkey='', address=''):
         self.balance = balance
         self.outputs = outputs
         self.pubkey = pubkey

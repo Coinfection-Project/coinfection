@@ -27,7 +27,7 @@ def diff2target(diff):
 
 # based on a simplifyed form of BTC's diff algo
 # *SHOULD* result in a approx time of 20 secconds per block, adjusts every block.
-
+from block import Block
 
 def compute_difficulty(block, blockparent):
     # return a diff of 1 for the first 3 blocks
@@ -40,24 +40,23 @@ def compute_difficulty(block, blockparent):
         for k in range(1, block.height):
             b = Block()  # init a shell block
             b.get(height=k)  # get block at height k
-            blocks.push(block_times[k-1] - b.timestamp)
+            block_times.append(block_times[k-1] - b.timestamp)
     else:
         block_times.pop()
         b = Block()  # init a shell block
         b.get(block.height-61)  # get block at height k
         b1 = Block()  # init a shell block
         b1.get(block.height-60)  # get block at height k
-        block_times.push(b1.timestamp - b.timestamp)
+        block_times.append(b1.timestamp - b.timestamp)
         for k in range(block.height-60, block.height):
             b = Block()  # init a shell block
             b.get(height=k)  # get block at height k
-            blocks.push(blocks[k-1] - b.timestamp)
+            block_times.append(block_times[k-1] - b.timestamp)
     delta = cal_average(block_times)
     return block.diff_bits * 20 / (delta / 1000)
 
 
 def difficulty_test():
-    from block import Block
     BLOCKCHAIN = []
     first = True
     wallet = Wallet()
