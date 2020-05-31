@@ -7,10 +7,12 @@ from utils import *
 from config import *
 import math
 from time import sleep
+import blockchain
+
 ''' 
 Based of cryptonote specification #10
 (https://cryptonote.org/cns/cns010.txt)
-Thanks to the turtlecoin server for helping me out on understanding how to implement the following two
+Thanks to the turtlecoin server for helping me out on understanding how to implement the following three
 '''
 # check a hashes diff 
 def check_diff(diff, hash):
@@ -28,8 +30,25 @@ def compute_difficulty(block, blockparent):
         return 1
     elif (block.timestamp <= blockparent.timestamp):
          return block.diff_bits * 20
+    block_times = [0]
+    elif block.height < 60:
+        for k in range(1, block.height):
+            b = Block() # init a shell block
+            b.get(height=k) # get block at height k
+            blocks.push(block_times[k-1] - b.timestamp)
     else:
-        return block.diff_bits * 20 / ((block.timestamp - blockparent.timestamp) / 1000)
+        block_times.pop()
+        b = Block() # init a shell block
+        b.get(block.height-61) # get block at height k
+        b1 = Block() # init a shell block
+        b1.get(block.height-60) # get block at height k
+        block_times.push(b1.timestamp - b.timestamp)
+        for k in range(block.height-60, block.height):
+            b = Block() # init a shell block
+            b.get(height=k) # get block at height k
+            blocks.push(blocks[k-1] - b.timestamp)
+    delta = cal_average(block_times)
+    return block.diff_bits * 20 / (delta / 1000)
 
 def difficulty_test():
     from block import Block
