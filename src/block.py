@@ -4,7 +4,7 @@ import hashlib
 from config import *
 from transaction import *
 import sys
-from difficulty import calculate_target
+from difficulty import diff2target, check_diff
 max_nonce = 2 ** 32
 
 '''
@@ -56,7 +56,7 @@ class Block:
 			else:
 				self.transactions.append(coinbase(MINING_ADDR, BLOCK_REWARD))
 			work = self.as_bytes()
-			target = calculate_target(self.diff_bits)
+			target = diff2target(self.diff_bits)
 			for nonce in range(max_nonce):
 				# increment the nonce
 				self.nonce = nonce
@@ -66,7 +66,7 @@ class Block:
 				hash_result = make_hash(work)
 				print("hash={} nonce={} value={} target={}".format(hash_result, nonce, int(hash_result, 16), target))
             	# check if this is a valid result, below the target
-				if int(hash_result, 16) < target:
+				if (check_diff(self.diff_bits, hash_result) == True):
 					#  set the hash of self to the hash we found
 					self.hash = str(hash_result)
 					return None
