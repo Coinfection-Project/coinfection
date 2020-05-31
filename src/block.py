@@ -7,7 +7,7 @@ import sys
 from difficulty import diff2target, check_diff
 import json
 from json import JSONEncoder
-
+from db import get, set
 max_nonce = 2 ** 32
 
 '''
