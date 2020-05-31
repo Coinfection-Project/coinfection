@@ -7,7 +7,6 @@ from utils import *
 from config import *
 import math
 from time import sleep
-import blockchain
 
 ''' 
 Based of cryptonote specification #10
