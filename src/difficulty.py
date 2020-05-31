@@ -12,13 +12,26 @@ from block import *
 import time
 from wallet_utils import *
 from config import *
+import math
+
+''' 
+Based of cryptonote specification #10
+(https://cryptonote.org/cns/cns010.txt)
+Thanks to the turtlecoin server for helping me out on understanding how to implement the following two
+'''
+# check a hashes diff 
+def check_diff(diff, hash):
+  return (int(hash, 16) * diff) < 2**256
 
 # diff into target
-def calculate_target(diff):
- return (2**224) * diff
+def diff2target(diff):
+ return math.floor((2**256 - 1) / diff)
 
+# based on a simplifyed form of BTC's diff algo
 def compute_difficulty(block, blockparent):
-    return block.diff_bits * 200 / (((block.timestamp - blockparent.timestamp)/1000) + 1)
+    return block.diff_bits * 200 / ( (  (block.timestamp - blockparent.timestamp ) / 1000 ) + 1 )
+    # *SHOULD* result in a approx time of 200 secconds per block, adjusts every block. 
+ 
 def difficulty_test():
     BLOCKCHAIN = []
     first = True
