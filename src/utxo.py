@@ -32,7 +32,7 @@ class txIn:
   def as_bytes(self):
     return "{}{}".format(self.output_hash,self.amount)
   
-  def hash(self):
+  def hash_out(self):
     work = self.as_bytes()
     self.hash = make_hash(work)
     return self.hash
@@ -63,5 +63,12 @@ class txOut:
   def is_infectable(self):
     return (self.is_clump() == True and self.allowed_infection == True and self.immune == False and self.infected == False)
   
+  def as_bytes(self):
+    return "{}{}".format(self.output_hash,self.amount)
+  
+  def hash_out(self):
+    work = self.as_bytes()
+    self.hash = make_hash(work)
+    return self.hash
   
 
