@@ -3,8 +3,7 @@
  This code is licensed under the GNU General Public License v3.0 (see LICENSE.txt for details)
 '''
 
-import time
-from wallet_utils import *
+from utils import *
 from config import *
 import math
 
@@ -23,8 +22,10 @@ def diff2target(diff):
 
 # based on a simplifyed form of BTC's diff algo
 def compute_difficulty(block, blockparent):
-    return block.diff_bits * 200 / ( (  (block.timestamp - blockparent.timestamp ) / 1000 ) + 1 )
-    # *SHOULD* result in a approx time of 200 secconds per block, adjusts every block. 
+    if (block.timestamp < blockparent.timestamp):
+        return 1
+    return block.diff_bits * 20 / ((block.timestamp - blockparent.timestamp) / 1000)
+    # *SHOULD* result in a approx time of 20 secconds per block, adjusts every block. 
 
 def difficulty_test():
     from block import Block
@@ -40,18 +41,18 @@ def difficulty_test():
             diff = 1
             if (len(BLOCKCHAIN) > 1):
                 diff = compute_difficulty(pb, BLOCKCHAIN[-2])
-            new_block = Block(height=pb.height+1, hash='', diff_bits=diff, timestamp=time.time()*1000, transactions=[], nonce=0, version=100, prev_hash=pb.hash)
+            new_block = Block(height=pb.height+1, hash='', diff_bits=diff, timestamp=millis(), transactions=[], nonce=0, version=100, prev_hash=pb.hash)
             print("Created block, mining")
             new_block.mine(diff)
-            print("Mined block. hash={} time={} difficulty={}".format(new_block.hash, (time.time()*1000)-new_block.timestamp, new_block.diff_bits))
+            print("Mined block. hash={} time={} (sec) difficulty={}".format(new_block.hash, (millis()-new_block.timestamp) / 1000, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
         else:
             print("creating genesis block")
             diff = 1
-            new_block = Block(height=0, hash='', diff_bits=diff, timestamp=time.time()*1000)
+            new_block = Block(height=0, hash='', diff_bits=diff, timestamp=millis())
             print("Created genesis block, mining")
             new_block.mine(1)
-            print("Mined genesis block. hash={} time={} difficulty={}".format(new_block.hash, (time.time()*1000)-new_block.timestamp, new_block.diff_bits))
+            print("Mined genesis block. hash={} time={}(sec) difficulty={}".format(new_block.hash, (millis()-new_block.timestamp) / 1000, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
             first = False
             time.sleep(1) # to prevent diff adjust issues
