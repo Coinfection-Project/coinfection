@@ -9,23 +9,27 @@ TOP_BLOCK = None
 
 read_block_height = get('height', 'coofchainstatus')
 if read_block_height == None:
-  # save the genesis block
-  genesis = genesis()
-  print("No blocks found, saving geneis block to db")
-  genesis.save()
-  set('height', '0', 'coofchainstatus')
-  TOP_BLOCK = genesis
+    # save the genesis block
+    genesis = genesis()
+    print("No blocks found, saving geneis block to db")
+    genesis.save()
+    set('height', '0', 'coofchainstatus')
+    TOP_BLOCK = genesis
+
 
 def get_block_height():
-  return TOP_BLOCK.height
+    return TOP_BLOCK.height
+
 
 def set_top_block(new):
-  TOP_BLOCK = new
-  set('height', str(new.height), 'coofchainstatus')
-  return True
-  
+    TOP_BLOCK = new
+    set('height', str(new.height), 'coofchainstatus')
+    return True
+
+
 def top_block():
-  return TOP_BLOCK
+    return TOP_BLOCK
+
 
 def get_block(height):
-  return get("blk-{}".format(height), 'coofblocks')
+    return get("blk-{}".format(height), 'coofblocks')

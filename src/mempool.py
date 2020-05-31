@@ -6,28 +6,31 @@ mempool.py handles the mempool, the place where unconfirmed transactions sit wai
 # This is the global var in which unconfimed txns are stored
 MEMPOOL = []
 
+
 def in_mempool(txn_hash):
-  for txn in MEMPOOL:
-    if (txn.hash == txn_hash):
-      return True
-  return False;
+    for txn in MEMPOOL:
+        if (txn.hash == txn_hash):
+            return True
+    return False
+
 
 def remove_from_mempool(txn_hash):
-  i = 0
-  for i in range(len(MEMPOOL)):
-    if (MEMPOOL[i].__dict__['hash'] == txn_hash):
-      MEMPOOL.pop(i)
-      return True
-  return False
+    i = 0
+    for i in range(len(MEMPOOL)):
+        if (MEMPOOL[i].__dict__['hash'] == txn_hash):
+            MEMPOOL.pop(i)
+            return True
+    return False
+
 
 def add_to_mempool(txn):
-  if (in_mempool(txn.hash)):
-    return False
-  else:
-    MEMPOOL.push(txn)
-    return True
+    if (in_mempool(txn.hash)):
+        return False
+    else:
+        MEMPOOL.push(txn)
+        return True
+
 
 def add_to_mempool_no_check(txn):
-  MEMPOOL.push(txn)
-  return True
-
+    MEMPOOL.push(txn)
+    return True
