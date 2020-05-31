@@ -5,6 +5,9 @@ from config import *
 from transaction import *
 import sys
 from difficulty import diff2target, check_diff
+import json
+from json import JSONEncoder
+
 max_nonce = 2 ** 32
 
 '''
@@ -108,6 +111,22 @@ class Block:
 		work = self.as_bytes()
 		self.hash = make_hash(work)
 		return self.hash()
+	def save(self):
+		db.set('blk-{}'.format(self.height), BlockEncoder().encode(self), 'coofblocks')
+		db.set(self.hash, str(self.height), 'coofblocksindex')
+		return True;
+	def get(height=None, hash=None):
+		if height == None and hash == None:
+			return 'must provide either hash or height'
+		elif height == None:
+			# get using hash
+			height = db.get(hash, 'coofblocksindex')
+		return db.get('blk-{}'.format(self.height), 'coofblocks')
+	
+# subclass JSONEncoder
+class BlockEncoder(JSONEncoder):
+        def default(self, o):
+            return o.__dict_
 def coinbase(miner, reward=BLOCK_REWARD):
 		txn = Transaction(type=0, sender='coinbase', to=miner, amount=reward, fee=0)
 		txn.hash_tx()
