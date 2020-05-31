@@ -3,12 +3,6 @@
  This code is licensed under the GNU General Public License v3.0 (see LICENSE.txt for details)
 '''
 
-'''
-Homestead eth pow difficulty algo
-Thanks to eth and https://github.com/giact/ for this diff algo
-https://github.com/giact/ethereum-blocktime-simulator/blob/master/ethereum-blocktime-simulator.py
-'''
-from block import Block
 import time
 from wallet_utils import *
 from config import *
@@ -31,8 +25,9 @@ def diff2target(diff):
 def compute_difficulty(block, blockparent):
     return block.diff_bits * 200 / ( (  (block.timestamp - blockparent.timestamp ) / 1000 ) + 1 )
     # *SHOULD* result in a approx time of 200 secconds per block, adjusts every block. 
- 
+
 def difficulty_test():
+    from block import Block
     BLOCKCHAIN = []
     first = True
     wallet = Wallet()
