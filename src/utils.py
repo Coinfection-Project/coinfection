@@ -38,3 +38,16 @@ def cal_average(num=[]):
 
       avg = sum_num / len(num)
       return avg
+
+# Function to convert   
+def listToString(s):  
+    
+    # initialize an empty string 
+    str1 = ""  
+    
+    # traverse in the string   
+    for ele in s:  
+        str1 += ele   
+    
+    # return string   
+    return str1  
