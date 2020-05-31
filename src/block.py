@@ -64,7 +64,7 @@ class Block:
 
 				# hash the block
 				hash_result = make_hash(work)
-				print("hash={} nonce={} value={} target={}".format(hash_result, nonce, int(hash_result, 16), target))
+#				print("hash={} nonce={} value={} target={}".format(hash_result, nonce, int(hash_result, 16), target))
             	# check if this is a valid result, below the target
 				if (check_diff(self.diff_bits, hash_result) == True):
 					#  set the hash of self to the hash we found

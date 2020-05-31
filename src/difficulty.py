@@ -24,7 +24,7 @@ def diff2target(diff):
 # *SHOULD* result in a approx time of 20 secconds per block, adjusts every block. 
 def compute_difficulty(block, blockparent):
     # return a diff of 1 for the first 3 blocks
-    if (block.height < 4):
+    if (block.height < 2):
         return 1
     elif (block.timestamp <= blockparent.timestamp):
          return block.diff_bits * 20
@@ -47,6 +47,7 @@ def difficulty_test():
                 diff = compute_difficulty(pb, BLOCKCHAIN[-2])
             new_block = Block(height=pb.height+1, hash='', diff_bits=diff, timestamp=millis(), transactions=[], nonce=0, version=100, prev_hash=pb.hash)
             print("Created block, mining")
+            print(new_block.timestamp)
             new_block.mine(diff)
             print("Mined block. hash={} time={} (sec) difficulty={}".format(new_block.hash, (millis()-new_block.timestamp) / 1000, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
@@ -59,6 +60,4 @@ def difficulty_test():
             print("Mined genesis block. hash={} time={}(sec) difficulty={}".format(new_block.hash, (millis()-new_block.timestamp) / 1000, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
             first = False
-            sleep(1) # to prevent diff adjust issues
-
-                
+        sleep(1) # to prevent diff adjust issues
