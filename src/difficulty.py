@@ -8,7 +8,7 @@ Homestead eth pow difficulty algo
 Thanks to eth and https://github.com/giact/ for this diff algo
 https://github.com/giact/ethereum-blocktime-simulator/blob/master/ethereum-blocktime-simulator.py
 '''
-from block import *
+from block import Block
 import time
 from wallet_utils import *
 from config import *
