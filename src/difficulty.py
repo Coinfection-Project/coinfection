@@ -27,9 +27,9 @@ def diff2target(diff):
 
 # based on a simplifyed form of BTC's diff algo
 # *SHOULD* result in a approx time of 20 secconds per block, adjusts every block.
-from block import Block
 
 def compute_difficulty(block, blockparent):
+    from block import Block
     # return a diff of 1 for the first 3 blocks
     if (block.height < 2):
         return 1
@@ -57,6 +57,7 @@ def compute_difficulty(block, blockparent):
 
 
 def difficulty_test():
+    from block import Block
     BLOCKCHAIN = []
     first = True
     wallet = Wallet()
