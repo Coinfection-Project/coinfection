@@ -17,6 +17,17 @@ class txIn:
     self.index = index
     self.address = ownder
     self.signature = signature
+  def to_json(self):
+    return '{ "hash" : "{}", "tx_hash" : "{}", "amount" : {}, "index" : {}, "address" : "{}", "signature: "{}" }'.format(self.hash, self.tx_hash, self.amount, self.index, self.address, self.signature)
+  
+  def from_json(self, json):
+    obj = json.loads(json)
+    self.hash = obj['hash']
+    self.tx_hash = obj['tx_hash']
+    self.amount = obj['amount']
+    self.index = obj['index']
+    self.address = obj['ownder']
+    self.signature = obj['signature']
     
   def as_bytes(self):
     return "{}{}".format(self.output_hash,self.amount)
