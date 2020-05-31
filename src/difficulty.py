@@ -31,7 +31,7 @@ def compute_difficulty(block, blockparent):
     elif (block.timestamp <= blockparent.timestamp):
          return block.diff_bits * 20
     block_times = [0]
-    elif block.height < 60:
+    if block.height < 60:
         for k in range(1, block.height):
             b = Block() # init a shell block
             b.get(height=k) # get block at height k
