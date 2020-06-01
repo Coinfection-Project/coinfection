@@ -90,5 +90,5 @@ def difficulty_test():
             BLOCKCHAIN.append(new_block)
             first = False
         new_block.save()
-        if (new_block.height < 19):
-            sleep(20 - new_block.height)  # to prevent diff adjust issues
+        if (new_block.height < 4):
+            sleep(5 - new_block.height)  # to prevent diff adjust issues

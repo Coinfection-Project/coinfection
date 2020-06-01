@@ -33,9 +33,9 @@ def millis():
 
 
 def cal_average(num=[]):
-    if num.len() == 1:
+    if len(num) == 1:
         return num[0]
-    elif num.len() == 0:
+    elif len(num) == 0:
         return 0
     else:
         sum_num = 0

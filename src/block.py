@@ -5,8 +5,7 @@ from config import *
 from transaction import Transaction
 import sys
 from difficulty import diff2target, check_diff
-import json
-from json import JSONEncoder
+import json as j
 from db import get, set
 import time
 from utxo import txIn, txOut
@@ -44,10 +43,10 @@ class Block:
 				txns_json = txns_json + txn_json + ', '
 			txns_json = txns_json + ']'
 
-			return '{"hash" : {}, "height"  : {}, "diff_bits" : {}, "timestamp" : {}, "nonce" : {}, "transactions" : {}, "version" : {}, "prev_hash" : {} }'.format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, txns_json, self.version, self.prev_hash)
+			return '{ ' + '"hash" : "{}", "height"  : {}, "diff_bits" : {}, "timestamp" : {}, "nonce" : {}, "transactions" : {}, "version" : {}, "prev_hash" : "{}" '.format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, txns_json, self.version, self.prev_hash) + '}'
 
-	def from_json(self, json):
-			obj=json.loads(json)
+	def from_json(self, as_json):
+			obj=j.loads(as_json)
 			self.hash=obj['hash']
 			self.height=obj['height']
 			self.diff_bits=obj['diff_bits']
@@ -146,7 +145,8 @@ class Block:
 	def save(self):
 		set('blk-{}'.format(self.height), self.to_json(), 'coofblocks')
 		set(self.hash, str(self.height), 'coofblocksindex')
-		return True;
+		return True
+
 	def get(self, height=None, hash=None):
 		if height == None and hash == None:
 			return 'must provide either hash or height'
@@ -154,6 +154,8 @@ class Block:
 			# get using hash
 			height=get(hash, 'coofblocksindex')
 		as_json=get('blk-{}'.format(self.height), 'coofblocks')
+		if as_json == None:
+			return 'block not found'
 		b=Block()  # init shell block
 		b.from_json(as_json)  # load into shell block from json
 		return b

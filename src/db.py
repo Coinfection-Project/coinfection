@@ -4,7 +4,7 @@ import pymongo
 import logging
 import mempool
 import json
-import transaction
+
 log = logging.getLogger(__name__)
 
 # Connect to client
@@ -36,9 +36,9 @@ for document in cursor:
 def get(key, collection_name):
     collection = db[collection_name]
     key = fast_hash(key)
-    doc = collection.find_one({"key": "{}".format(key)})
+    doc = collection.find_one({"_id": "{}".format(key)})
     if (doc != None):
-        data = collection.find_one({"key": "{}".format(key)})["data"]
+        data = collection.find_one({"_id": "{}".format(key)})["data"]
         return data
     else:
         return None
@@ -48,8 +48,21 @@ def set(key, value, collection_name):
     collection = db[collection_name]
     key = fast_hash(key)
     if (collection.find_one({"_id": "{}".format(key)}) != None):
-        return "already in db"
+        myquery = {"_id": "{}".format(key) }
+        newvalues = { "$set": {"_id": "{}".format(key), "data": "{}".format(value) } } 
+        collection.update_one(myquery, newvalues)
+        return True
     else:
         collection.insert_one(
             {"_id": "{}".format(key), "data": "{}".format(value)})
         return True
+
+
+def list_all_items():
+    collist = db.list_collection_names()
+    for col in collist:
+        print("Collection: {}".format(col))
+        collection = db[col]
+        cursor = collection.find({})
+        for document in cursor:
+            print(" - Doc: {}".format(document))

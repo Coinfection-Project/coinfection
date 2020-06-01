@@ -63,7 +63,10 @@ class Transaction:
         inputs_as_str = []
         for txin in self.inputs:
             inputs_as_str.append(txin.to_json())
-        return "{}{}{}{}{}{}{}".format(self.to, self.sender, listToString(inputs_as_str), listToString(self.outputs), self.type, self.extra, self.fee)
+        outputs_as_str = []
+        for txout in self.outputs:
+            outputs_as_str.append(txout.to_json())
+        return "{}{}{}{}{}{}{}".format(self.to, self.sender, listToString(inputs_as_str), listToString(outputs_as_str), self.type, self.extra, self.fee)
 
     def ser(self):
         return json.dumps(self.__dict__)

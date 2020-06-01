@@ -23,8 +23,9 @@ class txIn:
         self.signature = signature
 
     def to_json(self):
-        return '{ "hash" : "{}", "tx_hash" : "{}", "amount" : {}, "index" : {}, "address" : "{}", "signature: "{}" }'.format(self.hash, self.tx_hash, self.amount, self.index, self.address, self.signature)
-
+        as_json =  ' "hash" : "{}", "tx_hash" : "{}", "amount" : {}, "index" : {}, "address" : "{}", "signature: "{}" '.format(self.hash, self.tx_hash, self.amount, self.index, self.address, self.signature)
+        return "{" + as_json + "}"
+        
     def from_json(self, json):
         obj = json.loads(json)
         self.hash = obj['hash']
@@ -63,6 +64,19 @@ class txOut:
         self.amount = amount
         self.immune = immune
         self.allowed_infection = allowed_infection
+
+    def to_json(self):
+        as_json =  ' "hash" : "{}", "index" : {}, , "address" : "{}", "amount" : {}, "allowed_infection" : "{}", "immune: "{}" '.format(self.hash, self.index, self.address, self.amount, self.immune, self.allowed_infection)
+        return "{" + as_json + "}"
+        
+    def from_json(self, json):
+        obj = json.loads(json)
+        self.hash = obj['hash']
+        self.index = int(obj['index'])
+        self.address = obj['address']
+        self.amount = int(obj['amount'])
+        self.immune = bool(obj['immune'])
+        self.allowed_infection = bool(obj['allowed_infection'])
 
     def is_clump(self):  # returns true if this is a token clump
         return (self.amount == SINGLETON_COLLECTION_AMOUNT * TOKEN_INFECTION_CLUMP)
