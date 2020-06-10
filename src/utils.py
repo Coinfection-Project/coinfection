@@ -61,7 +61,7 @@ def listToString(s):
     # return string
     return str1
 
-def log_init(logPath=.'/', fileName='coof'):
+def log_init(logPath='./', fileName='coof'):
     logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
     rootLogger = logging.getLogger()
     rootLogger.setLevel(logging.INFO)
