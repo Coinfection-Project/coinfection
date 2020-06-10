@@ -35,23 +35,22 @@ def compute_difficulty(block, blockparent):
         return 1
     elif (block.timestamp <= blockparent.timestamp):
         return block.diff_bits * 20
-    block_times = [0]
+    deltas = []
+    block_times = []
     if block.height < 60:
         for k in range(1, block.height):
             b = Block()  # init a shell block
             b.get(height=k)  # get block at height k
-            block_times.append(block_times[k-1] - b.timestamp)
+            if (k != 1):
+                deltas.append(block_times[k-1] - b.timestamp)
+            block_times.append(b.timestamp)
     else:
-        block_times.pop()
-        b = Block()  # init a shell block
-        b.get(block.height-61)  # get block at height k
-        b1 = Block()  # init a shell block
-        b1.get(block.height-60)  # get block at height k
-        block_times.append(b1.timestamp - b.timestamp)
         for k in range(block.height-60, block.height):
             b = Block()  # init a shell block
             b.get(height=k)  # get block at height k
-            block_times.append(block_times[k-1] - b.timestamp)
+            if (k != 1):
+                deltas.append(block_times[k-1] - b.timestamp)
+            block_times.append(b.timestamp)
     delta = cal_average(block_times)
     return block.diff_bits * 20 / (delta / 1000)
 
