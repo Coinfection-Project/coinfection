@@ -28,4 +28,5 @@ def utxo():
         return tx.to_json()
 
 
-app.run()
+def run():
+    app.run()
