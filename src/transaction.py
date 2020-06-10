@@ -4,6 +4,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey,
 from db import get, set
 import json
 from utils import listToString
+from utxo import txIn, txOut
 
 class Transaction:
     to = ''
@@ -17,7 +18,7 @@ class Transaction:
     inputs = []
     outputs = []
 
-    def __init__(self, to, sender, type=1, hash='', signature='', extra='', fee=0.5 * config.SINGLETON_COLLECTION_AMOUNT, inputs=[], outputs=[]):
+    def __init__(self, to, sender, type=1, hash='', signature='', extra='', timestamp=0, fee=0.5 * config.SINGLETON_COLLECTION_AMOUNT, inputs=[], outputs=[]):
         self.to = to
         self.sender = sender
         self.type = type
@@ -27,6 +28,52 @@ class Transaction:
         self.signature = signature
         self.extra = extra
         self.fee = fee
+        self.timestamp = timestamp
+
+    def to_json(self):
+        inputs_json = '[ '
+        i = 0
+        for txin in self.inputs:
+            i += 1
+            txin_json = txin.to_json()
+            inputs_json = inputs_json + txin_json
+            if (i != len(self.inputs)):
+                inputs_json += ', '
+        inputs_json = inputs_json + ']'
+        outputs = '[ '
+        i = 0
+        for txout in self.outputs:
+            i += 1
+            txout_json = txout.to_json()
+            outputs = outputs + txout_json
+            if (i != len(self.outputs)):
+                outputs += ', '
+        outputs = outputs + ']'
+
+        return '{ ' + '"hash" : "{}", "to"  : "{}", "sender" : "{}", "type" : {}, "extra" : "{}", "timestamp" : {}, "inputs" : {}, "outputs" : {}, "signature" : "{}" '.format(self.hash, self.to, self.sender, self.type, self.extra, self.timestamp, inputs_json,outputs, self.signature) + '}'
+
+
+    def from_json(self, as_json):
+        obj = None
+        if (isinstance(as_json, str)):
+            obj = json.loads(as_json)
+        else:
+            obj = as_json
+        self.hash = obj['hash']
+        self.to = obj['to']
+        self.sender = obj['sender']
+        self.type = int(obj['type'])
+        self.address = obj['extra']
+        self.signature = int(obj['timestamp'])
+        for txin_json in obj['inputs']:
+            txin= txIn()
+            txin.from_json(txin_json)
+            self.inputs.append(txin)
+        for txout_json in obj['outputs']:
+            txout= txOut()
+            txout.from_json(txout_json)
+            self.outputs.append(txout)
+        self.index = obj['signature']
 
     def hash_tx(self):
         work = self.as_bytes()
@@ -42,14 +89,6 @@ class Transaction:
     def valid(self):
         # TODO
         return True
-
-    def from_json(self, json):
-        # TODO
-        return True
-
-    def to_json(self):
-        # TODO
-        return '{}'
 
     def read(self, hash):
         return None
