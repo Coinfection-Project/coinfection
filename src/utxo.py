@@ -1,10 +1,11 @@
 '''
 UTXO this file defines the txin and txout structs
 '''
-from hash import make_hash
+from hash import sha256
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 from config import SINGLETON_COLLECTION_AMOUNT, TOKEN_INFECTION_CLUMP
 import json
-
+from db import get, set
 class txIn:
     # transaction input hash: sha256 (transaction + index + amount + address)
     hash = ''
@@ -44,11 +45,44 @@ class txIn:
 
     def hash_in(self):
         work = self.as_bytes()
-        self.hash = make_hash(work)
+        self.hash = sha256(work)
         return self.hash
 
-    def sign(self):
-        return True
+    def sign(self, priv_key):
+        key = Ed25519PrivateKey.from_private_bytes(
+            bytearray.fromhex(priv_key).decode())
+        self.signature = key.sign(self.hash.encode('utf-8')).hex()
+        return self.signature
+    
+    def valid_signature(self):
+        if (self.owner == 'coinbase'):
+            return True
+        else:
+            # all nicknames end with .coof, if the owner ends with .coof then we need to get the pubkey from the db
+            if (self.owner.endswith('.coof')):
+                read = get(key=self.owner, collection_name='nicknames.db')
+                if (read == None):
+                    return False
+                else:
+                    public_key = Ed25519PublicKey.from_public_bytes(
+                        bytearray.fromhex(read).decode())
+            else:
+                public_key = Ed25519PublicKey.from_public_bytes(
+                    bytearray.fromhex(self.owner).decode())
+            try:
+                public_key.verify(bytearray.fromhex(
+                    self.signature).decode(), self.hash.encode('utf-8'))
+                return True
+            except:
+                return False
+
+    def coinbase(self):
+        if self.tx_hash != '':
+            return False
+        elif self.address != 'coinbase':
+            return False
+        else:
+            return True
 
 
 class txOut:
@@ -97,5 +131,16 @@ class txOut:
 
     def hash_out(self):
         work = self.as_bytes()
-        self.hash = make_hash(work)
+        self.hash = sha256(work)
         return self.hash
+
+    def save(self):
+        return set(self.hash, self.to_json(), 'utxos')
+    
+    def get(self,hash):
+        got = get(hash, 'utxos')
+        try:
+            self = self.from_json(got)
+        except:
+            return False
+        return True
