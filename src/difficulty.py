@@ -45,15 +45,15 @@ def compute_difficulty(block):
             b = Block()  # init a shell block
             log.debug("Getting block at height={}".format(k))
             b.get(height=k)  # get block at height k
-            if (k != 0):
-                deltas.append(block_times[-1] - b.timestamp)
+            if (k != 1):
+                deltas.append(b.timestamp - block_times[-1])
             block_times.append(b.timestamp)
     else:
         for k in range(block.height-60, block.height):
             b = Block()  # init a shell block
             b.get(height=k)  # get block at height k
-            if (k != block.height-60):
-                deltas.append(block_times[-1] - b.timestamp)
+            if (k != 1):
+                deltas.append(b.timestamp - block_times[-1])
             block_times.append(b.timestamp)
     log.debug("deltas: {}, times: {}".format(deltas, block_times))
     delta = cal_average(block_times)
