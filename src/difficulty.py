@@ -31,6 +31,7 @@ def diff2target(diff):
 # based on a simplifyed form of BTC's diff algo
 # *SHOULD* result in a approx time of 20 secconds per block, adjusts every block.
 
+
 def compute_difficulty(block):
     log.info("Calclating difficulty for block. hash={} height={} current_diff={}".format(block.hash, block.height, block.diff_bits))
     from block import Block
@@ -40,21 +41,21 @@ def compute_difficulty(block):
     deltas = []
     block_times = []
     if block.height < 60:
-        for k in range(1, block.height):
+        for k in range(0, block.height):
             b = Block()  # init a shell block
             log.debug("Getting block at height={}".format(k))
             b.get(height=k)  # get block at height k
-            if (k != 1):
-                deltas.append(block_times[k-1] - b.timestamp)
+            if (k != 0):
+                deltas.append(block_times[-1] - b.timestamp)
             block_times.append(b.timestamp)
     else:
         for k in range(block.height-60, block.height):
             b = Block()  # init a shell block
             b.get(height=k)  # get block at height k
-            if (k != 1):
-                deltas.append(block_times[k-1] - b.timestamp)
+            if (k != block.height-60):
+                deltas.append(block_times[-1] - b.timestamp)
             block_times.append(b.timestamp)
-    log.debug("deltas: {}, times".format(deltas, block_times))
+    log.debug("deltas: {}, times: {}".format(deltas, block_times))
     delta = cal_average(block_times)
     if (delta == 0):
         return block.diff_bits
