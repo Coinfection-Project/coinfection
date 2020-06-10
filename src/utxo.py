@@ -3,7 +3,7 @@ UTXO this file defines the txin and txout structs
 '''
 from hash import make_hash
 from config import SINGLETON_COLLECTION_AMOUNT, TOKEN_INFECTION_CLUMP
-
+import json
 
 class txIn:
     # transaction input hash: sha256 (transaction + index + amount + address)
@@ -23,16 +23,20 @@ class txIn:
         self.signature = signature
 
     def to_json(self):
-        as_json =  ' "hash" : "{}", "tx_hash" : "{}", "amount" : {}, "index" : {}, "address" : "{}", "signature: "{}" '.format(self.hash, self.tx_hash, self.amount, self.index, self.address, self.signature)
+        as_json =  ' "hash" : "{}", "tx_hash" : "{}", "amount" : {}, "index" : {}, "address" : "{}", "signature": "{}" '.format(self.hash, self.tx_hash, self.amount, self.index, self.address, self.signature)
         return "{" + as_json + "}"
         
-    def from_json(self, json):
-        obj = json.loads(json)
+    def from_json(self, as_json):
+        obj = None
+        if (isinstance(as_json, str)):
+            obj = json.loads(as_json)
+        else:
+            obj = as_json
         self.hash = obj['hash']
         self.tx_hash = obj['tx_hash']
-        self.amount = obj['amount']
-        self.index = obj['index']
-        self.address = obj['ownder']
+        self.amount = int(obj['amount'])
+        self.index = int(obj['index'])
+        self.address = obj['address']
         self.signature = obj['signature']
 
     def as_bytes(self):
@@ -66,11 +70,15 @@ class txOut:
         self.allowed_infection = allowed_infection
 
     def to_json(self):
-        as_json =  ' "hash" : "{}", "index" : {}, , "address" : "{}", "amount" : {}, "allowed_infection" : "{}", "immune: "{}" '.format(self.hash, self.index, self.address, self.amount, self.immune, self.allowed_infection)
+        as_json =  ' "hash" : "{}", "index" : {}, "address" : "{}", "amount" : {}, "allowed_infection" : "{}", "immune": "{}" '.format(self.hash, self.index, self.address, self.amount, self.immune, self.allowed_infection)
         return "{" + as_json + "}"
         
-    def from_json(self, json):
-        obj = json.loads(json)
+    def from_json(self, as_json):
+        obj = None
+        if (isinstance(as_json, str)):
+            obj = json.loads(as_json)
+        else:
+            obj = as_json
         self.hash = obj['hash']
         self.index = int(obj['index'])
         self.address = obj['address']
