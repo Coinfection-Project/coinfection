@@ -11,6 +11,9 @@ import logging
 
 log = logging.getLogger("diff test")
 
+DIFFICULTYS = {
+    "doublesha256": 1
+}
 ''' 
 Based of cryptonote specification #10
 (https://cryptonote.org/cns/cns010.txt)
@@ -63,7 +66,9 @@ def compute_difficulty(block):
     log.debug("deltas: {}, delta: {}".format(deltas, delta))
     if (delta == 0):
         return block.diff_bits
-    return block.diff_bits * 20 / (delta / 1000)
+    diff = block.diff_bits * 20 / (delta / 1000)
+    DIFFICULTYS[block.algo] = diff
+    return diff
 
 
 def difficulty_test():

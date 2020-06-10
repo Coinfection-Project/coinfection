@@ -4,7 +4,7 @@ chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8',
          '9', '0', 'a', 'b', 'c', 'd', 'e', 'f']  # Hexadecimal
 
 
-def make_hash(text):
+def sha256(text):
     '''
     Convert a string into a SHA-256 hash
     '''

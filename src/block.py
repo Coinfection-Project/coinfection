@@ -1,5 +1,5 @@
 import random
-from hash import make_hash
+from hash import sha256
 import hashlib
 from config import *
 from transaction import Transaction
@@ -20,6 +20,9 @@ log = logging.getLogger(__name__)
 A block.
 '''
 
+MINING_ALGOS = {
+	"doublesha256": sha256 
+}
 
 class Block:
 	height = 0
@@ -30,8 +33,9 @@ class Block:
 	nonce = 0x00
 	version = 0x111
 	prev_hash = ''
+	algo = "doublesha256"
 
-	def __init__(self, height=0, hash='', diff_bits=1, timestamp=0, transactions=[], nonce=0, version=100, prev_hash='00000000000000000000000000000000'):
+	def __init__(self, height=0, hash='', diff_bits=1, timestamp=0, transactions=[], nonce=0, version=100, prev_hash='00000000000000000000000000000000', algo = "doublesha256"):
  		self.hash = hash
  		self.height = height
  		self.diff_bits = diff_bits
@@ -40,7 +44,7 @@ class Block:
  		self.transactions = transactions
  		self.version = version
  		self.prev_hash = prev_hash
-
+		self.algo = algo
 	def to_json(self):
 			txns_json = '[ '
 			i = 0
@@ -52,7 +56,7 @@ class Block:
 					txns_json += ', '
 			txns_json = txns_json + ']'
 
-			return '{ ' + '"hash" : "{}", "height"  : {}, "diff_bits" : {}, "timestamp" : {}, "nonce" : {}, "transactions" : {}, "version" : {}, "prev_hash" : "{}" '.format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, txns_json, self.version, self.prev_hash) + '}'
+			return '{ ' + '"hash" : "{}", "height"  : {}, "diff_bits" : {}, "timestamp" : {}, "nonce" : {}, "transactions" : {}, "version" : {}, "prev_hash" : "{}", "algo" : {} '.format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, txns_json, self.version, self.prev_hash, self.algo) + '}'
 
 	def from_json(self, as_json):
 			log.debug("Json decoding block, json="+as_json)
@@ -69,6 +73,7 @@ class Block:
 
 			self.version=obj['version']
 			self.prev_hash=obj['prev_hash']
+			self.algo = obj['algo']
 
 	def mine(self, difficulty, diff_bits=None):
 		if (diff_bits != None):
@@ -115,7 +120,7 @@ class Block:
 				work=self.as_bytes()
 
 				# hash the block
-				hash_result=make_hash(work)
+				hash_result=sha256(work)
 #				print("hash={} nonce={} value={} target={}".format(hash_result, nonce, int(hash_result, 16), target))
             	# check if this is a valid result, below the target
 				if (check_diff(self.diff_bits, hash_result) == True):
@@ -132,8 +137,10 @@ class Block:
 	def valid(self):
 		if self.hash == '':  # a hash should never be blank
 			return 'empty hash'
+		elif self.algo not in mining_algos:
+			return 'algo not supported'
 		else:
-			tmp=self  # clonse self into a temp block buffer
+			tmp=self  # clone self into a temp block buffer
 			tmp.hash()  # hash the temp block buffer
 			if (tmp.hash != self.hash):  # if the temp block resultant hash is not that of self.hash return err
 				return 'bad block hash'
@@ -163,7 +170,7 @@ class Block:
 
 	def hash_blk(self):
 		work=self.as_bytes()
-		self.hash=make_hash(work)
+		self.hash=MINING_ADDR[self.algo](work)
 		return self.hash()
 	def save(self):
 		set('blk-{}'.format(self.height), self.to_json(), 'coofblocks')
