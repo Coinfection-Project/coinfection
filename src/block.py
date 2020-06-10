@@ -10,6 +10,7 @@ from db import get, set
 import time
 from utxo import txIn, txOut
 import logging
+from utils import millis
 
 max_nonce = 2 ** 32
 
@@ -100,7 +101,15 @@ class Block:
 				self.transactions.append(coinbase(MINING_ADDR, BLOCK_REWARD))
 			work=self.as_bytes()
 			target=diff2target(self.diff_bits)
+			start = millis()
+			begin = start
+			hashes = 0
 			for nonce in range(max_nonce):
+				hashes += 1
+				if (millis() - start >= 60000):
+					log.info("Mining at {} h/s".format( hashes/((millis()-start)/1000)))
+					start = millis()
+					hashes = 0
 				# increment the nonce
 				self.nonce=nonce
 				work=self.as_bytes()
@@ -112,6 +121,8 @@ class Block:
 				if (check_diff(self.diff_bits, hash_result) == True):
 					#  set the hash of self to the hash we found
 					self.hash=str(hash_result)
+					if nonce > 0 and millis()-begin > 0:
+						log.info("Avg. hashrate={} h/s".format( nonce/((millis()-begin)/1000)))
 					return None
 
 	def as_bytes(self):
