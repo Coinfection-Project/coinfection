@@ -5,7 +5,6 @@ from db import get, set
 import json
 from utils import listToString
 
-
 class Transaction:
     to = ''
     sender = ''

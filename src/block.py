@@ -9,7 +9,11 @@ import json as j
 from db import get, set
 import time
 from utxo import txIn, txOut
+import logging
+
 max_nonce = 2 ** 32
+
+log = logging.getLogger(__name__)
 
 '''
 A block.
@@ -38,14 +42,19 @@ class Block:
 
 	def to_json(self):
 			txns_json = '[ '
+			i = 0
 			for txn in self.transactions:
+				i += 1
 				txn_json = txn.to_json()
-				txns_json = txns_json + txn_json + ', '
+				txns_json = txns_json + txn_json
+				if (i != len(self.transactions)):
+					txns_json += ', '
 			txns_json = txns_json + ']'
 
 			return '{ ' + '"hash" : "{}", "height"  : {}, "diff_bits" : {}, "timestamp" : {}, "nonce" : {}, "transactions" : {}, "version" : {}, "prev_hash" : "{}" '.format(self.hash, self.height, self.diff_bits, self.timestamp, self.nonce, txns_json, self.version, self.prev_hash) + '}'
 
 	def from_json(self, as_json):
+			log.debug("Json decoding block, json="+as_json)
 			obj=j.loads(as_json)
 			self.hash=obj['hash']
 			self.height=obj['height']
@@ -55,7 +64,7 @@ class Block:
 			for txn_json in obj['transactions']:
 				txn= Transaction(to='', sender='')
 				txn.from_json(txn_json)
-				self.transactions.push(txn)
+				self.transactions.append(txn)
 
 			self.version=obj['version']
 			self.prev_hash=obj['prev_hash']
@@ -72,7 +81,10 @@ class Block:
 		else:
 			# set the target diff bits to the minimum difficulty (difficulty var)
 			self.diff_bits=difficulty
-			if (len(self.transactions) > 1):
+			txn_count = 0
+			for _ in self.transactions:
+				txn_count += 1
+			if (txn_count > 1):
 				if (self.transactions[0].type != 1):
 					amount=BLOCK_REWARD
 					coinbase_txn=coinbase(MINING_ADDR, amount)
@@ -132,7 +144,7 @@ class Block:
 		else:
 			i=0
 			for tx in self.transactions:
-				i=i+1
+				i += 1 
 				if (tx.valid() == False):
 					return 'tx at slot=' + i + ' invalid'
 		#if (sys.sizeof(self) > MAX_BLOCK_SIZE):  # TODO: check size of block
@@ -153,12 +165,11 @@ class Block:
 		elif height == None:
 			# get using hash
 			height=get(hash, 'coofblocksindex')
-		as_json=get('blk-{}'.format(self.height), 'coofblocks')
+		as_json=get('blk-{}'.format(height), 'coofblocks')
 		if as_json == None:
 			return 'block not found'
-		b=Block()  # init shell block
-		b.from_json(as_json)  # load into shell block from json
-		return b
+		self.from_json(as_json)
+		return self
 
 def coinbase(miner, reward=BLOCK_REWARD):
 		coinbase_input= txIn('', '', amount=reward,
@@ -174,8 +185,9 @@ def coinbase(miner, reward=BLOCK_REWARD):
 		txn = Transaction(type=0, sender='coinbase', to=miner, inputs=[coinbase_input], outputs=[out])
 		txn.hash_tx()
 		return txn
+
 def genesis(): # TODO: return same hardcoded block every time
-		gen_blk = Block(timestamp=time.time()*1000)
-		gen_blk.transactions = coinbase(GENESIS_REWARD_ADDR, PREMINE)
+		gen_blk = Block(timestamp=time.time()*1000, transactions=[])
+		gen_blk.transactions.append(coinbase(GENESIS_REWARD_ADDR, PREMINE))
 		gen_blk.mine(1)
 		return gen_blk

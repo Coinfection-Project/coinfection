@@ -1,7 +1,8 @@
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives import serialization
 import time as time_  # make sure we don't override time
-
+import logging
+import sys
 
 class Wallet:
     balance = 0
@@ -59,3 +60,16 @@ def listToString(s):
 
     # return string
     return str1
+
+def log_init(logPath, fileName):
+    logFormatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+    rootLogger = logging.getLogger()
+    rootLogger.setLevel(logging.DEBUG)
+
+    fileHandler = logging.FileHandler("{0}/{1}.log".format(logPath, fileName))
+    fileHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(fileHandler)
+
+    consoleHandler = logging.StreamHandler(sys.stdout)
+    consoleHandler.setFormatter(logFormatter)
+    rootLogger.addHandler(consoleHandler)

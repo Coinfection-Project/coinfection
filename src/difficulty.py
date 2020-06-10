@@ -7,6 +7,9 @@ from utils import *
 from config import *
 import math
 from time import sleep
+import logging
+
+log = logging.getLogger("diff test")
 
 ''' 
 Based of cryptonote specification #10
@@ -28,18 +31,18 @@ def diff2target(diff):
 # based on a simplifyed form of BTC's diff algo
 # *SHOULD* result in a approx time of 20 secconds per block, adjusts every block.
 
-def compute_difficulty(block, blockparent):
+def compute_difficulty(block):
+    log.info("Calclating difficulty for block. hash={} height={} current_diff={}".format(block.hash, block.height, block.diff_bits))
     from block import Block
     # return a diff of 1 for the first 3 blocks
     if (block.height < 2):
         return 1
-    elif (block.timestamp <= blockparent.timestamp):
-        return block.diff_bits * 20
     deltas = []
     block_times = []
     if block.height < 60:
         for k in range(1, block.height):
             b = Block()  # init a shell block
+            log.debug("Getting block at height={}".format(k))
             b.get(height=k)  # get block at height k
             if (k != 1):
                 deltas.append(block_times[k-1] - b.timestamp)
@@ -51,12 +54,17 @@ def compute_difficulty(block, blockparent):
             if (k != 1):
                 deltas.append(block_times[k-1] - b.timestamp)
             block_times.append(b.timestamp)
+    log.debug("deltas: {}, times".format(deltas, block_times))
     delta = cal_average(block_times)
+    if (delta == 0):
+        return block.diff_bits
     return block.diff_bits * 20 / (delta / 1000)
 
 
 def difficulty_test():
-    from block import Block
+    from block import Block, genesis
+    from db import clear_db
+    clear_db()
     BLOCKCHAIN = []
     first = True
     wallet = Wallet()
@@ -64,30 +72,27 @@ def difficulty_test():
     set_mining_addr(wallet.address)
     while True:
         if (first == False):
-            print("creating new block")
+            log.info("creating new block")
             pb = BLOCKCHAIN[-1]
             diff = 1
             if (len(BLOCKCHAIN) > 1):
-                diff = compute_difficulty(pb, BLOCKCHAIN[-2])
+                diff = compute_difficulty(pb)
             new_block = Block(height=pb.height+1, hash='', diff_bits=diff, timestamp=millis(),
                               transactions=[], nonce=0, version=100, prev_hash=pb.hash)
-            print("Created block, mining")
-            print(new_block.timestamp)
+            log.info("Created block, mining. diff={}".format(new_block.diff_bits))
             new_block.mine(diff)
-            print("Mined block. hash={} time={} (sec) difficulty={}".format(
+            log.info("Mined block. hash={} time={} (sec) difficulty={}".format(
                 new_block.hash, (millis()-new_block.timestamp) / 1000, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
         else:
-            print("creating genesis block")
+            log.info("creating genesis block")
             diff = 1
-            new_block = Block(height=0, hash='',
-                              diff_bits=diff, timestamp=millis())
-            print("Created genesis block, mining")
+            new_block = genesis()
+            log.info("Created genesis block, mining")
             new_block.mine(1)
-            print("Mined genesis block. hash={} time={}(sec) difficulty={}".format(
+            log.info("Mined genesis block. hash={} time={}(sec) difficulty={}".format(
                 new_block.hash, (millis()-new_block.timestamp) / 1000, new_block.diff_bits))
             BLOCKCHAIN.append(new_block)
             first = False
         new_block.save()
-        if (new_block.height < 4):
-            sleep(5 - new_block.height)  # to prevent diff adjust issues
+        sleep(1.5)  # to prevent diff adjust issues
