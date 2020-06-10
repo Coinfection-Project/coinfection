@@ -1,5 +1,5 @@
 import config
-from hash import make_hash
+from hash import sha256
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey, Ed25519PublicKey
 from db import get, set
 import json
@@ -77,7 +77,7 @@ class Transaction:
 
     def hash_tx(self):
         work = self.as_bytes()
-        self.hash = make_hash(work)
+        self.hash = sha256(work)
         return self.hash
 
     def sign(self, priv_key):
@@ -107,10 +107,17 @@ class Transaction:
         return "{}{}{}{}{}{}{}".format(self.to, self.sender, listToString(inputs_as_str), listToString(outputs_as_str), self.type, self.extra, self.fee)
 
     def ser(self):
-        return json.dumps(self.__dict__)
+        return self.to_json()
 
     def valid_input(self, index):
-        return True  # TODO
+        if index == 0 and self.inputs[0].coinbase() != True:
+            return False
+        elif index > len(self.inputs):
+            return False
+        elif self.inputs[index].valid() == False:
+            return False
+        else: 
+            return True
 
     def valid_sig(self):
         if (self.sender == 'coinbase'):
