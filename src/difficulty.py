@@ -42,14 +42,14 @@ def compute_difficulty(block, blockparent):
             b = Block()  # init a shell block
             b.get(height=k)  # get block at height k
             if (k != 1):
-                deltas.append(block_times[k-1] - b.timestamp)
+                deltas.append(b.timestamp - block_times[k-1])
             block_times.append(b.timestamp)
     else:
         for k in range(block.height-60, block.height):
             b = Block()  # init a shell block
             b.get(height=k)  # get block at height k
             if (k != 1):
-                deltas.append(block_times[k-1] - b.timestamp)
+                deltas.append(b.timestamp - block_times[k-1])
             block_times.append(b.timestamp)
     delta = cal_average(block_times)
     return block.diff_bits * 20 / (delta / 1000)
