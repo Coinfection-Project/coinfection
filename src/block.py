@@ -4,13 +4,14 @@ import hashlib
 from config import *
 from transaction import Transaction
 import sys
-from difficulty import diff2target, check_diff
+from difficulty import diff2target, check_diff, DIFFICULTYS
 import json as j
 from db import get, set
 import time
 from utxo import txIn, txOut
 import logging
 from utils import millis
+import math
 
 max_nonce = 2 ** 32
 
@@ -112,7 +113,7 @@ class Block:
 			for nonce in range(max_nonce):
 				hashes += 1
 				if (millis() - start >= 60000):
-					log.info("Mining at {} h/s".format( hashes/((millis()-start)/1000)))
+					log.info("Mining at {} h/s".format( math.ceil(hashes/((millis()-start)/1000))))
 					start = millis()
 					hashes = 0
 				# increment the nonce
@@ -127,7 +128,7 @@ class Block:
 					#  set the hash of self to the hash we found
 					self.hash=str(hash_result)
 					if nonce > 0 and millis()-begin > 0:
-						log.info("Avg. hashrate={} h/s".format( nonce/((millis()-begin)/1000)))
+						log.info("Avg. hashrate={} h/s".format(  math.ceil(nonce/((millis()-begin)/1000))))
 					return None
 
 	def as_bytes(self):
@@ -157,16 +158,17 @@ class Block:
 				return 'height missmatch'
 		if (int(self.hash, 16) < self.diff_bits):  # check the diff bits and the hash match up
 			return 'hash difficulty low'
-		elif (False):  # todo: check if diff bits is over or equal to difficulty for height self.height
+		elif (self.diff_bits < DIFFICULTYS[block.algo]):  #  check if diff bits is over or equal to difficulty for height self.height
 			return 'diff bits low'
 		else:
 			i=0
 			for tx in self.transactions:
 				i += 1 
-				if (tx.valid() == False):
+				if (tx.valid() != True):
 					return 'tx at slot=' + i + ' invalid'
 		#if (sys.sizeof(self) > MAX_BLOCK_SIZE):  # TODO: check size of block
 		#	return 'block too big'
+		return True
 
 	def hash_blk(self):
 		work=self.as_bytes()
